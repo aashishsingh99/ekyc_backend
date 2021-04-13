@@ -1,7 +1,9 @@
 const bcrypt = require("bcryptjs");
+const fs= require("fs");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const User = require("../models/users");
+const Fin = require("../models/institution");
 const Conversation = require("../models/Chat");
 const institution = require("../models/institution");
 const config = require("config");
@@ -71,14 +73,14 @@ exports.user_register = async (req, res) => {
 
       // Create a new file system based wallet for managing identities.
       const walletPath = path.join(process.cwd()+'/../../', 'wallet');
-      console.log(walletPath);
+      //console.log(walletPath);
       const wallet = new FileSystemWallet(walletPath);
-      console.log(`Wallet path: ${walletPath}`);
+      //console.log(`Wallet path: ${walletPath}`);
       
       // Check to see if we've already enrolled the user.
       const userExists = await wallet.exists(name);
       console.log("line 76")
-      console.log("ccp path",ccpPath);
+      //console.log("ccp path",ccpPath);
       if (userExists) {
           console.log('An identity for the user "user1" already exists in the wallet');
           return;
@@ -96,9 +98,9 @@ exports.user_register = async (req, res) => {
       // Create a new gateway for connecting to our peer node.
       const gateway = new Gateway();
       console.log();
-      console.log(gateway);
+      //console.log(gateway);
       await gateway.connect(ccpPath, { wallet, identity: 'admin', discovery: { enabled: true, asLocalhost: true } });
-      console.log("line 93")
+      //console.log("line 93")
       
       // Get the CA client object from the gateway for interacting with the CA.
       const ca = gateway.getClient().getCertificateAuthority();
@@ -121,7 +123,7 @@ exports.user_register = async (req, res) => {
     // Create a new file system based wallet for managing identities.
     const walletPath = path.join(process.cwd()+'/../../', 'wallet');
     const wallet = new FileSystemWallet(walletPath);
-    console.log(`Wallet path: ${walletPath}`);
+    //console.log(`Wallet path: ${walletPath}`);
     console.log("125")
     // Check to see if we've already enrolled the user.
     const userExists = await wallet.exists(name);
@@ -141,7 +143,7 @@ exports.user_register = async (req, res) => {
     // console.log("network",network,"ending network");
     // Get the contract from the network.
     const contract = network.getContract('fabcar');
-    console.log("contract",contract,"ending contract");
+    //console.log("contract",contract,"ending contract");
    
 const params = null;
 const result =
@@ -156,10 +158,10 @@ const result =
   //await contract.submitTransaction('createCar')
 gateway.disconnect();
 console.log("*************************");
-console.log(result);
+//console.log(result);
 console.log('Transaction has been submitted');
     //console.log("Result",result,"result2",result.toString('utf8'),"result3",result.toString());
-    console.log("Result",result);
+   // console.log("Result",result);
     
 
     // Disconnect from the gateway.
@@ -177,6 +179,58 @@ console.log('Transaction has been submitted');
   }
 };
 
+exports.user_register2 = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  console.log("TWEETYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
+  const { name, password} = req.body;
+  console.log("DUFFFFFFF")
+  //console.log(id);
+  try {
+    let user = await Fin.findOne({ name });
+    console.log(user);
+    if (user) {
+      return res.status(400).json({ errors: [{ msg: "User already exists" }] });
+    }
+    
+    user = new Fin({
+      name,
+      password,
+    });
+
+    const salt = await bcrypt.genSalt(10);
+
+    user.password = await bcrypt.hash(password, salt);
+    console.log("going to save user table");
+    await user.save();
+    console.log("printing user id",user.id)
+    const payload = {
+      user: {
+        id: user.id,
+      },
+    };
+    console.log("55555",payload);
+
+    jwt.sign(
+      payload,
+      config.get("jwtSecret"),
+      { expiresIn: "5 days" },
+      (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+      }
+    );
+    //console.log("res",res);
+    console.log("after jwt");
+    console.log("registered financial institution successfullly");
+}
+catch (error) {
+  console.error(`Failed to register financial isntituiton: ${error}`);
+  process.exit(1);
+}
+}
 
 
 exports.getConversations = async (req, res) => {
@@ -285,15 +339,66 @@ exports.Get_Keys = async (req, res) => {
   console.log("inside controller of get_Keys",name);
 
   try {
-    //const chat = await Conversation.findById(chatid).populate("recipients");
-//get keys from wallet
-const wallet_path=path.resolve(__dirname, '..', '..','..', 'fabcar', 'javascript','wallet',name);
-// const public_key=wallet_path
-console.log(wallet_path,"this is my wallet in controller");
+const wallet_path=path.resolve(__dirname, '..', '..','..','wallet',name);
+console.log(wallet_path);
+ var files = fs.readdirSync(wallet_path);
+// console.log("files are",files[0])
 
+//first_file=files[0];
+// console.log(first_file,"in controller:")
+// const data='';
+// const data1='';
+var data2=['hi'];
+const wallet_path2=path.resolve(__dirname, '..', '..','..','wallet',name,files[0]);
+const wallet_path3=path.resolve(__dirname, '..', '..','..','wallet',name,files[1]);
+  console.log(wallet_path2);
 
-res.json({ wallet_path });
-  } catch (err) {
-    console.log("Server Error" + err);
+var data3 = fs.readFileSync(wallet_path2,"utf8");
+var data4 = fs.readFileSync(wallet_path3,"utf8");
+console.log("data3",data3);
+console.log("after data3");
+data2[1]=data3;
+data2[2]=data4;
+console.log("data array",data2);
+res.json(data2);
+  // fs.readFile(wallet_path2, 'utf8' , (err, data) => {
+   
+
+  //   if (err) {
+  //     console.error(err)
+  //     return
+  //   }
+  //   console.log("inside fs readfilewwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww")
+  //   data2[1]=data;
+  //   await console.log("HIL",data)
+
+ 
+  // })}
+    
+  //   //console.log("AKS",data);
+  //   console.log("printing array",data2);
+  //   res.json(data2);
+ 
+  //setTimeout(()=>{fs.readFile(wallet_path2, 'utf8' , (err, data1) => {
+//     if (err) {
+//       console.error(err)
+//       return
+//     }
+//     console.log("insde fs readfilewwwwwwwwwwwwwwwwwwwwwwwwwwwwwww")
+//     console.log(data1);
+//     data2[2]=data1;
+//  })},2000);
+
+ 
+  //setTimeout(() => {  console.log("World!"); }, 10000);
+  //console.log("BEACH",data);
+  
+  // data2[2]=data1;
+  // data2[2]=data1;
+//console.log("printing array hol",data);
+
+  }
+catch (err) {
+    console.log("error in get_keys controller"+err);
   }
 };

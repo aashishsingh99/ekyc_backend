@@ -19,8 +19,11 @@ router.post(
 router.post(
   '/inst',
    (req, res) => {
-     console.log("hsdasdahsda");
-    userController.user_register2(req, res);
+    //  console.log("hsdasdahsda");
+    // userController.user_register2(req, res);
+    console.log("1")
+  userController.user_register2(req, res);
+  console.log("end1")
   }
 );
 
@@ -39,7 +42,14 @@ router.post('/conversation',auth, userController.getChatById)
 // @desc     Create new conversation with a user
 // @access   Private
 router.post('/newConversation',auth, userController.newConversation)
-router.post('/Get_Keys',auth, userController.Get_Keys)
+const mod = require("../controllers/users");
+//private create a post
+router.post("/getKeys", auth, async (req, res) => {
+  console.log("in getkeys route");
+  mod.Get_Keys(req, res);
+  
+});
+//router.post('/getKeys',auth, userController.Get_Keys)
 
 router.get('/getChatby')
 

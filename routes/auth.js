@@ -2,15 +2,23 @@ const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
 const auth = require('../middleware/auth');
-const {user_by_token,auth_token} = require('../controllers/auth');
+const auth2 = require('../middleware/auth2');
+const {user_by_token,auth_token,user_by_token2} = require('../controllers/auth');
 const { ConnectionStates } = require('mongoose');
 
 // @route    GET api/auth
 // @desc     Get user by token
 // @access   Private
 router.get('/', auth,  (req, res) => {
-  
+  console.log("1")
   user_by_token(req,res);
+  console.log("end1")
+});
+
+router.get('/fin', auth2, (req, res) => {
+  console.log("123455")
+  user_by_token2(req,res);
+  console.log("end1123455")
 });
 
 // @route    POST api/auth

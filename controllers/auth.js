@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const User = require("../models/users");
+const Fin = require("../models/institution");
 const config = require("config");
 
 
@@ -48,6 +49,7 @@ const auth_token = async (req, res) => {
 };
 const user_by_token = async (req, res) => {
   try {
+    console.log("1")
     const user = await User.findById(req.user.id).select("-password");
 
     res.json(user);
@@ -55,4 +57,18 @@ const user_by_token = async (req, res) => {
     log_and_send_error(err.message, 500, "Server Error");
   }
 };
-module.exports = { auth_token, user_by_token };
+
+
+const user_by_token2 = async (req, res) => {
+  try {
+    console.log("1")
+    console.log("user_buttoenenken")
+    console.log(req);
+    const user = await Fin.findById(req.user.id).select("-password");
+
+    res.json(user);
+  } catch (err) {
+    console.log(err.message, "Server Error");
+  }
+};
+module.exports = { auth_token, user_by_token,user_by_token2 };

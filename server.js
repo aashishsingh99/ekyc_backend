@@ -100,17 +100,18 @@ app.use(express.json({ extended: false }));
 app.get("/", (req, res) => {
   res.send("working");
 });
-io.on("connection", (client) => {
-  client.on("subscribeToTimer", (interval) => {
-    console.log("client is subscribing to timer with interval ", interval);
-    setInterval(() => {
-      client.emit("timer", new Date());
-    }, interval);
-  });
-});
+// io.on("connection", (client) => {
+//   client.on("subscribeToTimer", (interval) => {
+//     console.log("client is subscribing to timer with interval ", interval);
+//     setInterval(() => {
+//       client.emit("timer", new Date());
+//     }, interval);
+//   });
+// });
 app.use("/api/users", require("./routes/users"));
 app.use("/api/auth", require("./routes/auth"));
-app.use("/api/Get_Keys", require("./routes/users"));
+//app.use("/api/auth/fin", require("./routes/auth"));
+//app.use("/api/getKeys", require("./routes/users"));
 //app.use("/api/event", require("./routes/messages"));
 const PORT = process.env.PORT || 5000;
 //io.listen(PORT);
