@@ -63,7 +63,7 @@ const user_by_token2 = async (req, res) => {
   try {
     console.log("1")
     console.log("user_buttoenenken")
-    console.log(req);
+    //console.log(req);
     const user = await Fin.findById(req.user.id).select("-password");
 
     res.json(user);

@@ -26,7 +26,16 @@ router.post(
   console.log("end1")
   }
 );
-
+router.post(
+  '/all_users',
+   (req, res) => {
+    //  console.log("hsdasdahsda");
+    // userController.user_register2(req, res);
+    console.log("1****")
+  userController.all_users(req, res);
+  console.log("end1****")
+  }
+);
 // @route    POST api/users/conversations
 // @desc     Get all conversations of a user
 // @access   Private

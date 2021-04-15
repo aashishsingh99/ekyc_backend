@@ -29,7 +29,7 @@ exports.user_register = async (req, res) => {
   console.log("FUCKOFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
   const { name, email, password,dob,id } = req.body;
   console.log("DUFFFFFFF")
-  console.log(id);
+  //console.log(id);
   try {
     let user = await User.findOne({ email });
     console.log(user);
@@ -190,7 +190,7 @@ exports.user_register2 = async (req, res) => {
   //console.log(id);
   try {
     let user = await Fin.findOne({ name });
-    console.log(user);
+    //console.log(user);
     if (user) {
       return res.status(400).json({ errors: [{ msg: "User already exists" }] });
     }
@@ -211,7 +211,7 @@ exports.user_register2 = async (req, res) => {
         id: user.id,
       },
     };
-    console.log("55555",payload);
+    //console.log("55555",payload);
 
     jwt.sign(
       payload,
@@ -230,9 +230,103 @@ catch (error) {
   console.error(`Failed to register financial isntituiton: ${error}`);
   process.exit(1);
 }
+
+//trying out stuff
+
+try {
+
+  // Create a new file system based wallet for managing identities.
+  const walletPath=path.resolve(__dirname, '..', '..','..','wallet');
+  const wallet = new FileSystemWallet(walletPath);
+  console.log(`Wallet path: ${walletPath}`);
+
+  // Check to see if we've already enrolled the user.
+  const userExists = await wallet.exists('user1');
+  if (!userExists) {
+      console.log('An identity for the user "user" does not exist in the wallet');
+      console.log('Run the registerUser.js application before retrying');
+      return;
+  }
+
+  // Create a new gateway for connecting to our peer node.
+  const gateway = new Gateway();
+  await gateway.connect(ccpPath, { wallet, identity: 'user1', discovery: { enabled: true, asLocalhost: true } });
+
+  // Get the network (channel) our contract is deployed to.
+  const network = await gateway.getNetwork('mychannel');
+
+  // Get the contract from the network.
+  const contract = network.getContract('fabcar');
+
+  // Evaluate the specified transaction.
+  // queryCar transaction - requires 1 argument, ex: ('queryCar', 'CAR0')
+  // queryAllCars transaction - requires no arguments, ex: ('queryAllCars')
+
+  console.log("before query all caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaars")
+  const result = await contract.evaluateTransaction('queryAllCars');
+  console.log("joke",result.toString());
+  // res.json({result.toString()});
+  
+  console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
+return result;
+} catch (error) {
+  console.error(`Failed to evaluate transaction: ${error}`);
+  process.exit(1);
 }
 
+//end 
+}
 
+exports.all_users = async (req,res) => {
+
+  try {
+
+    // Create a new file system based wallet for managing identities.
+    const walletPath=path.resolve(__dirname, '..', '..','..','wallet');
+    const wallet = new FileSystemWallet(walletPath);
+    console.log(`Wallet path: ${walletPath}`);
+  
+    // Check to see if we've already enrolled the user.
+    const userExists = await wallet.exists('user1');
+    if (!userExists) {
+        console.log('An identity for the user "user" does not exist in the wallet');
+        console.log('Run the registerUser.js application before retrying');
+        return;
+    }
+  
+    // Create a new gateway for connecting to our peer node.
+    const gateway = new Gateway();
+    await gateway.connect(ccpPath, { wallet, identity: 'user1', discovery: { enabled: true, asLocalhost: true } });
+  
+    // Get the network (channel) our contract is deployed to.
+    const network = await gateway.getNetwork('mychannel');
+  
+    // Get the contract from the network.
+    const contract = network.getContract('fabcar');
+  
+    // Evaluate the specified transaction.
+    // queryCar transaction - requires 1 argument, ex: ('queryCar', 'CAR0')
+    // queryAllCars transaction - requires no arguments, ex: ('queryAllCars')
+  
+    console.log("before query all caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaars")
+    const result = await contract.evaluateTransaction('queryAllCars');
+    console.log("joke",result.toString());
+    //res.json({result.toString()});
+    
+    console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
+    console.log("JJJJ",result);
+    console.log("*******************************")
+    console.log("SSSSS",result.toString());
+    var temp = JSON.parse(result);
+    console.log("tempasdasdasdasdasd",temp);
+    res.json(temp)
+  } catch (error) {
+    console.error(`Failed to evaluate transaction: ${error}`);
+    process.exit(1);
+  }
+
+
+}
 exports.getConversations = async (req, res) => {
   try {
     const { user_name } = req.body;
