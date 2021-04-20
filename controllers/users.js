@@ -37,6 +37,7 @@ exports.user_register = async (req, res) => {
       return res.status(400).json({ errors: [{ msg: "User already exists" }] });
     }
     console.log("email man ",email)
+    
     user = new User({
       name,
       email,
@@ -48,6 +49,8 @@ exports.user_register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
 
     user.password = await bcrypt.hash(password, salt);
+    console.log(name);
+    console.log("user",user);
     console.log("going to save user table");
     await user.save();
     console.log("printing user id",user.id)
@@ -123,6 +126,7 @@ exports.user_register = async (req, res) => {
     // Create a new file system based wallet for managing identities.
     const walletPath = path.join(process.cwd()+'/../../', 'wallet');
     const wallet = new FileSystemWallet(walletPath);
+    console.log("walletpath",walletPath,name);
     //console.log(`Wallet path: ${walletPath}`);
     console.log("125")
     // Check to see if we've already enrolled the user.
@@ -158,7 +162,10 @@ const result =
   //await contract.submitTransaction('createCar')
 gateway.disconnect();
 console.log("*************************");
-//console.log(result);
+console.log(result);
+// var temp = JSON.parse(result);
+// console.log(temp);
+console.log(result.toString());
 console.log('Transaction has been submitted');
     //console.log("Result",result,"result2",result.toString('utf8'),"result3",result.toString());
    // console.log("Result",result);
