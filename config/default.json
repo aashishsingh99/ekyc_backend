@@ -1,4 +1,4 @@
 {
-  "mongoURI": "mongodb+srv://ash123:ash123@cluster0.axqow.mongodb.net/e-kyc",
+  "mongoURI": "",
   "jwtSecret": "mysecrettoken"
 }
